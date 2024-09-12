@@ -1,48 +1,35 @@
-import { useState } from "react";
-import reactLogo from "./assets/react.svg";
-import viteLogo from "/vite.svg";
-import "./App.css";
-import { Navigate, Routes, Route, NavLink } from "react-router-dom";
-import { Loader } from "./components/Loader/Loader";
-
+import { Route, Routes } from "react-router-dom";
 import { lazy, Suspense } from "react";
-import { HomePage } from "./pages/HomePage";
-import { MoviesPage } from "./pages/MoviesPage";
+import "./App.css";
+import Loader from "./components/Loader/Loader";
 
-const App = () => {
-  const [count, setCount] = useState(0);
+const Navigation = lazy(() => import("./components/Navigation/Navigation"));
+const HomePage = lazy(() => import("./pages/HomePage/HomePage"));
+const MoviesPage = lazy(() => import("./pages/MoviesPage/MoviesPage"));
+const MovieDetailsPage = lazy(() =>
+  import("./pages/MovieDetailsPage/MovieDetailsPage")
+);
+const MovieCast = lazy(() => import("./components/MovieCast/MovieCast"));
+const MovieReviews = lazy(() =>
+  import("./components/MovieReviews/MovieReviews")
+);
+const NotFoundPage = lazy(() => import("./pages/NotFoundPage/NotFoundPage"));
 
-  //const HomePage = lazy(() => import("pages/HomePage.jsx"));
-  //const MovesPage = lazy(() => import("pages/MoviesPage.jsx"));
-
+function App() {
   return (
     <div>
-      <header>
-      <nav>
-          <NavLink
-            // className={({ isActive }) => clsx(css.link, isActive && css.active)}
-            to="/"
-          >
-            Home
-          </NavLink>
-          <NavLink
-            // className={({ isActive }) => clsx(css.link, isActive && css.active)}
-            to="/movies"
-          >
-            Movies
-          </NavLink>
-        </nav>
-      </header>
-      <main>
-    <Routes>
-      <Route path="/">
-        {/* <Route element={<Loader />} /> */}
-        <Route path="/" element={<HomePage />} />
-        <Route path="movies" element={<MoviesPage />} />
-        <Route path="*" element={<Navigate to="/" />} />
-      </Route>
-    </Routes>
-    </main>
+      <Navigation />
+      <Suspense fallback={<Loader />}>
+        <Routes>
+          <Route path="/" element={<HomePage />} />
+          <Route path="/movies" element={<MoviesPage />} />
+          <Route path="/movies/:movieId" element={<MovieDetailsPage />}>
+            <Route path="cast" element={<MovieCast />} />
+            <Route path="reviews" element={<MovieReviews />} />
+          </Route>
+          <Route path="*" element={<NotFoundPage />} />
+        </Routes>
+      </Suspense>
     </div>
   );
 }
